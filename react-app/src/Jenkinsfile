@@ -24,7 +24,7 @@ pipeline {
             steps {
                 
                 // Install project dependencies
-                sh 'npm install'
+                sh 'npm install -y'
 
                 // Build the React.js application
                 sh 'npm run build'
@@ -33,8 +33,7 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-                // Install necessary tools (like AWS CLI, if not already installed)
-                sh 'sudo yum -y update && sudo yum -y install -y awscli'
+                
 
                 // Copy the built React app to the EC2 instance
                 sh "scp -i ${SSH_KEY_PATH} -r ${REACT_APP_BUILD_DIR} ec2-user@${EC2_INSTANCE_IP}:~/"
