@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+
+    environment {
+        // Update these values with your own configurations
+        AWS_REGION = 'us-east-1'
+        AWS_ACCESS_KEY_ID = credentials('AKIASY3GVSTBWPDYUXGI')
+        AWS_SECRET_ACCESS_KEY = credentials('O4+7w/JnOIfPRvnVF4KZOkoXSNNo7ZaMTAtvnzm8')
+        EC2_INSTANCE_IP = '54.156.65.230'
+        SSH_KEY_PATH = '/home/dell/Downloads'
+        REACT_APP_BUILD_DIR = 'build'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout your code from your version control system (e.g., Git)
+                // You might need to configure the SCM tool you're using
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Install Node.js and npm
+                sh 'apt-get update && apt-get install -y nodejs npm'
+
+                // Install project dependencies
+                sh 'npm install'
+
+                // Build the React.js application
+                sh 'npm run build'
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                // Install necessary tools (like AWS CLI, if not already installed)
+                sh 'apt-get update && apt-get install -y awscli'
+
+                // Copy the built React app to the EC2 instance
+                sh "scp -i ${SSH_KEY_PATH} -r ${REACT_APP_BUILD_DIR} ec2-user@${EC2_INSTANCE_IP}:~/"
+
+                // SSH into the EC2 instance and perform deployment steps
+                sh "ssh -i ${SSH_KEY_PATH} ec2-user@${EC2_INSTANCE_IP} 'sudo mv ~/${REACT_APP_BUILD_DIR} /var/www/html'"
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up resources or perform cleanup tasks
+        }
+    }
+}
