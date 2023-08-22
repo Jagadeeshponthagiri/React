@@ -22,10 +22,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                // Install Node.js and npm
-                sh 'sudo yum -y update && sudo yum -y install -y nodejs npm'
-                sh 'password: 123'
-
+                
                 // Install project dependencies
                 sh 'npm install'
 
