@@ -4,8 +4,6 @@ pipeline {
     environment {
         // Update these values with your own configurations
         AWS_REGION = 'us-east-1'
-        AWS_ACCESS_KEY_ID = ('AKIASY3GVSTBWPDYUXGI')
-        AWS_SECRET_ACCESS_KEY = ('O4+7w/JnOIfPRvnVF4KZOkoXSNNo7ZaMTAtvnzm8')
         EC2_INSTANCE_IP = '54.156.65.230'
         SSH_KEY_PATH = '/home/dell/Downloads'
         REACT_APP_BUILD_DIR = 'build'
