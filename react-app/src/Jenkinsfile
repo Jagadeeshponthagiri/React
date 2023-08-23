@@ -4,8 +4,8 @@ pipeline {
     environment {
         // Update these values with your own configurations
         AWS_REGION = 'us-east-1'
-        EC2_INSTANCE_IP = '54.156.65.230'
-        SSH_KEY_PATH = '/home/dell/Downloads'
+        EC2_INSTANCE_IP = '52.3.250.81'
+        SSH_KEY_PATH = '/home/dell/Downloads/react.pem'
         REACT_APP_BUILD_DIR = 'build'
     }
 
