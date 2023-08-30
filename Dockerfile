@@ -5,7 +5,7 @@ FROM node:14
 WORKDIR /app
 
 # Copy package.json and package-lock.json to the container
-COPY /home/dell/react/React/react-app/package*.json . 
+COPY package*.json . 
 
 # Install project dependencies
 RUN npm install
