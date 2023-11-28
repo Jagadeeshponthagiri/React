@@ -3,15 +3,15 @@ pipeline {
     
     environment {
         DOCKER_IMAGE_NAME = 'myreact'
-        DOCKER_HUB_CREDENTIALS = 'dockerhub_id'
-        DOCKER_HUB_REPO = 'imr99/myreact'  
+        DOCKER_HUB_CREDENTIALS = 'docker-cred'
+        DOCKER_HUB_REPO = 'jagadeeshponthagiri/ultimate-cicd'  
         CONTAINER_NAME = 'myreactappContainer'
     }
     
     stages {
         stage('Clone Git Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/imr99/React.git'
+                git branch: 'main', url: 'https://github.com/Jagadeeshponthagiri/React.git'
             }
         }
         
