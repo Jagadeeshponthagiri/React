@@ -1,49 +1,51 @@
 pipeline {
     agent any
-    
-    environment {
-        DOCKER_IMAGE_NAME = 'myreact'
-        DOCKER_HUB_CREDENTIALS = 'docker-cred'
-        DOCKER_HUB_REPO = 'jagadeeshponthagiri/ultimate-cicd'  
-        CONTAINER_NAME = 'myreactappContainer'
-    }
-    
+
     stages {
-        stage('Clone Git Repository') {
+        stage('git') {
             steps {
-                git branch: 'main', url: 'https://github.com/Jagadeeshponthagiri/React.git'
+                git url :  'https://github.com/Jagadeeshponthagiri/devops'
             }
         }
-        
-        stage('Build Docker Image') {
+        stage('build') {
+            environment{
+                PATH = "/opt/apache-maven-3.9.5/bin:$PATH"
+            }
             steps {
-                script {
-                    sh "docker build -t ${DOCKER_IMAGE_NAME} ."
+                sh "mvn clean package"
+            }
+        }
+        stage('static code analysis') {
+            environment{
+                SONAR_URL = "http://44.204.227.198:9000"
+                PATH = "/opt/apache-maven-3.9.5/bin:$PATH"
+            }
+            steps{
+             withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+              sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+                } 
+            }
+          }
+        stage('docker build'){
+            environment{
+              DOCKER_HUB_CREDENTIALS = 'docker-cred'
+              DOCKER_IMAGE_NAME = 'demo-job'
+              DOCKER_HUB_REPO = 'jagadeeshponthagiri/index.docker.io'    
+            }
+            steps{
+              script{
+                sh "docker build -t ${DOCKER_IMAGE_NAME}"
                 }
-            }
-        }
-        
-        stage('Push to Docker Hub') {
-            steps {
-                script {
-                    withDockerRegistry(credentialsId: "${DOCKER_HUB_CREDENTIALS}", url: '') {
-                        sh "docker tag ${DOCKER_IMAGE_NAME} ${DOCKER_HUB_REPO}:${BUILD_NUMBER}"
-                        sh "docker push ${DOCKER_HUB_REPO}:${BUILD_NUMBER}"
-                    }
+              }
+        stage('docker push'){
+            steps{
+              script{
+                withDockerRegistry(credentialsId: "${DOCKER_HUB_CREDENTIALS}", url: '') {
+                  sh "docker tag ${DOCKER_IMAGE_NAME} ${DOCKER_HUB_REPO}:${BUILD_NUMBER}"
+                  sh "docker push ${DOCKER_HUB_REPO}:${BUILD_NUMBER}"
                 }
+              }
             }
-        }
-        
-        stage('Docker Run') {
-            steps {
-                script {
-                    sh "docker stop ${CONTAINER_NAME} || true"
-                    sh "docker rm ${CONTAINER_NAME} || true"
-                    
-                    //def dockerImage = docker.image("${DOCKER_HUB_REPO}:${BUILD_NUMBER}")
-                    sh "docker container run -itd --name ${CONTAINER_NAME} -p 3000:3000 ${DOCKER_HUB_REPO}:${BUILD_NUMBER}"
-                }
-            }
-        }
+         }
     }
 }
